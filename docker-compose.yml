@@ -1,0 +1,21 @@
+version: '3'
+services:
+    server:
+        build: 
+            dockerfile: Dockerfile.dev
+            context: .
+        environment:
+            - REDIS_SERVER=redis:6379
+        volumes:
+            - .:/app
+        ports:
+            - 8080:8080
+        depends_on:
+            - redis
+    redis:
+        image: redis:latest
+        container_name: redis-metric-api
+        volumes:
+            - ./data/redis:/data
+        ports:
+            - 6379:6379
