@@ -12,6 +12,26 @@ func (redisAdapter RedisAdapter) AddMetricRepository(metric domain.Metric) error
 	return err
 }
 
+func (redisAdapter RedisAdapter) ListKeysRepository() []string {
+	result, err := redisAdapter.Client.Keys("*").Result()
+
+	if err != nil {
+		errors.New("Error while listing keys")
+	}
+
+	return result
+}
+
+func (redisAdapter RedisAdapter) DeleteMetricRepository(metricName string, expiredAt string) (int64, error) {
+	result, err := redisAdapter.Client.LRem(metricName, 1, expiredAt).Result()
+
+	if err != nil {
+		return result, errors.New("Error while deleting metric")
+	}
+
+	return result, err
+}
+
 func (redisAdapter RedisAdapter) ListMetricsRepository(metricName string) (domain.Metrics, error) {
 	var metrics domain.Metrics
 	qtdMetrics, err := redisAdapter.Client.LLen(metricName).Result()
