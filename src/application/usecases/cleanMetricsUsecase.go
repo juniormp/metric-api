@@ -15,5 +15,5 @@ func CleanMetrics(c *gin.Context) {
 	redisAdapter := repository.RedisAdapter{client}
 	infrastructure.CleanMetrics(redisAdapter)
 
-	c.JSON(http.StatusCreated, "")
+	c.JSON(http.StatusOK, "")
 }

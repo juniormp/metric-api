@@ -18,6 +18,7 @@ func main() {
 
 	router.POST("/metric/:name", usecases.AddMetric)
 	router.GET("/metric/:name", usecases.MetricReport)
+	router.GET("/clean-metrics", usecases.CleanMetrics)
 
 	router.Run()
 }
