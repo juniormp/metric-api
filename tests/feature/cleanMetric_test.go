@@ -1,7 +1,6 @@
 package feature_test
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,22 +15,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func performRequestReportMetric(r http.Handler, method, path string) *httptest.ResponseRecorder {
+func performRequestCleanMetric(r http.Handler, method, path string) *httptest.ResponseRecorder {
 	request, _ := http.NewRequest(method, path, nil)
+
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, request)
 
 	return w
 }
 
-func TestReportMetricFeature(t *testing.T) {
+func TestCleanMetricFeature(t *testing.T) {
 	metricName := "payments"
-	validMetric := time.Now().Add(time.Hour).Format("2006-01-02T15:04:05Z07:00")
+	validMetric := time.Now().Add(time.Hour).Format("2006-01-02T15:04:05Z07:00") + "_40"
 	metrics := domain.Metrics{
 		Name: metricName,
 		Values: []string{
-			validMetric + "_40",
-			validMetric + "_40",
+			validMetric,
+			validMetric,
 			"2020-01-07T04:23:48Z_13",
 			"2020-01-07T04:23:48Z_13",
 		},
@@ -42,14 +42,12 @@ func TestReportMetricFeature(t *testing.T) {
 	factorytest.PersistMetrics(metrics, redisAdapter)
 
 	router := web.SetupRouter()
-	response := performRequestReportMetric(router, "GET", "/metric/"+metricName)
-	var body map[string]int
-	err := json.Unmarshal([]byte(response.Body.String()), &body)
-	value, exists := body["value"]
+	response := performRequestCleanMetric(router, "GET", "/clean-metrics")
+
+	result, _ := redisAdapter.ListMetricsRepository(metricName)
 
 	assert.Equal(t, http.StatusOK, response.Code)
-	assert.Nil(t, err)
-	assert.True(t, exists)
-	assert.Equal(t, 80, value)
+	assert.Equal(t, validMetric, result.Values[0])
+	assert.Equal(t, validMetric, result.Values[1])
 	client.FlushAll()
 }
