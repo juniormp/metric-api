@@ -1,6 +1,6 @@
 # metric-api
 
-The api is based on Domain Driven Design and Clean Architecture practices following TDD and Test Fist approach.
+The metric-api is based on Domain Driven Design and Clean Architecture practices following TDD and Test Fist approach.
 
 
 **Tech stack**
@@ -9,7 +9,6 @@ The api is based on Domain Driven Design and Clean Architecture practices follow
 - Framework [gin-gonic](https://github.com/gin-gonic/gin)
 - Docker
 - Redis
-
 
 
 
@@ -57,14 +56,14 @@ Status 200
 
 ### Project Setup
 
-Docker build
+To build project image
 
  `$ docker build -t metric-api -f Dockerfile.dev .`
  
-Docker Compose run
+To start de project
 
 `$ docker-compose up -d`
 
-Run tests
+To run the tests
 
 `$ go test ./tests/...`
