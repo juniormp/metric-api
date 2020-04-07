@@ -29,6 +29,41 @@ func TestCreatesMetric(t *testing.T) {
 	client.FlushAll()
 }
 
+func TestDeleteMetric(t *testing.T) {
+	metric := domain.Metric{
+		Name:      "ping",
+		Value:     20.00,
+		ExpiredAt: "2020-04-05T15:04:05Z07:00_20",
+	}
+	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
+	redisAdapter := repository.RedisAdapter{client}
+	factorytest.PersistMetric(metric, redisAdapter)
+
+	redisAdapter.DeleteMetricRepository(metric.Name, metric.ExpiredAt)
+
+	result, _ := redisAdapter.Client.LIndex(metric.Name, 2).Result()
+	assert.Empty(t, result)
+	client.FlushAll()
+}
+
+func TestListKeys(t *testing.T) {
+	metrics := domain.Metrics{
+		Name: "clicks",
+		Values: []string{
+			"2020-04-05T15:04:05Z07:00_20",
+			"2020-04-05T16:04:05Z07:00_20",
+			"2020-04-05T17:04:05Z07:00_20",
+		},
+	}
+	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
+	redisAdapter := repository.RedisAdapter{client}
+	factorytest.PersistMetrics(metrics, redisAdapter)
+
+	result := redisAdapter.ListKeysRepository()
+
+	assert.Equal(t, []string{"clicks"}, result)
+}
+
 func TestGetMetricList(t *testing.T) {
 	metrics := domain.Metrics{
 		Name: "clicks",
