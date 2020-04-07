@@ -28,7 +28,7 @@ func setup(client *redis.Client) domain.Metrics {
 	return metrics
 }
 
-func TestFoo(t *testing.T) {
+func TestGetMetricReport(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	metrics := setup(client)
 
