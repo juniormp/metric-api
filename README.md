@@ -19,6 +19,7 @@ The metric-api is based on Domain Driven Design and Clean Architecture practices
 
 ### Endpoints
 
+There is a file `metric-api.postman_collection` that can be imported on postman app to request the endpoints bellow. In this file all endpoints are already configured to execute and test.
 
 Create a metric
 ```
@@ -67,3 +68,4 @@ To start de project
 To run the tests
 
 `$ go test ./tests/...`
+
