@@ -18,12 +18,13 @@ func setup(client *redis.Client) domain.Metrics {
 	timeToExpire := currentTime.Add(time.Hour)
 
 	redisAdapter := repository.RedisAdapter{client}
+	repositoryMetrics := repository.MetricsRepository{Adapter: redisAdapter}
 	metricName := "clicks"
 	expiredAt := timeToExpire.Format("2006-01-02T15:04:05Z07:00") + "_" + "20"
 
 	redisAdapter.Client.LPush(metricName, expiredAt).Result()
 
-	metrics, _ := redisAdapter.ListMetricsRepository("clicks")
+	metrics, _ := repositoryMetrics.ListMetricsRepository("clicks")
 
 	return metrics
 }

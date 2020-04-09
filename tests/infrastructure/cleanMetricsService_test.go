@@ -28,9 +28,9 @@ func TestCleansOldMetrics(t *testing.T) {
 	client.FlushAll()
 	redisAdapter := repository.RedisAdapter{client}
 	repository := repository.MetricsRepository{Adapter: redisAdapter}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	factorytest.PersistMetrics(metrics, repository)
 
-	infrastructure.CleanMetrics(redisAdapter)
+	infrastructure.CleanMetrics(repository)
 	result, _ := repository.ListMetricsRepository(metrics.Name)
 
 	assert.Equal(t, validMetric, result.Values[0])
