@@ -39,12 +39,13 @@ func TestCleanMetricFeature(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	client.FlushAll()
 	redisAdapter := repository.RedisAdapter{client}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	metricsRepository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetrics(metrics, metricsRepository)
 
 	router := web.SetupRouter()
 	response := performRequestCleanMetric(router, "GET", "/clean-metrics")
 
-	result, _ := redisAdapter.ListMetricsRepository(metricName)
+	result, _ := metricsRepository.ListMetricsRepository(metricName)
 
 	assert.Equal(t, http.StatusOK, response.Code)
 	assert.Equal(t, validMetric, result.Values[0])

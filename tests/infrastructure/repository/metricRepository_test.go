@@ -38,9 +38,10 @@ func TestDeleteMetric(t *testing.T) {
 	}
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{Client: client}
-	factorytest.PersistMetric(metric, redisAdapter)
+	repository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetric(metric, repository)
 
-	redisAdapter.DeleteMetricRepository(metric.Name, metric.ExpiredAt)
+	repository.DeleteMetricRepository(metric.Name, metric.ExpiredAt)
 
 	result, _ := redisAdapter.Client.LIndex(metric.Name, 2).Result()
 	assert.Empty(t, result)
@@ -58,9 +59,10 @@ func TestListKeys(t *testing.T) {
 	}
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{Client: client}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	repository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetrics(metrics, repository)
 
-	result := redisAdapter.ListKeysRepository()
+	result := repository.ListKeysRepository()
 
 	assert.Equal(t, []string{"clicks"}, result)
 }
@@ -76,9 +78,10 @@ func TestGetMetricList(t *testing.T) {
 	}
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{Client: client}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	repository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetrics(metrics, repository)
 
-	response, _ := redisAdapter.ListMetricsRepository("clicks")
+	response, _ := repository.ListMetricsRepository("clicks")
 
 	assert.Equal(t, metrics.Name, response.Name)
 	assert.Equal(t, metrics.Values[0], response.Values[2])

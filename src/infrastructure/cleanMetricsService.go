@@ -9,11 +9,11 @@ import (
 	"github.com/juniormp/metric-api/src/infrastructure/repository"
 )
 
-func CleanMetrics(redis repository.RedisAdapter) {
-	metricKeys := redis.ListKeysRepository()
+func CleanMetrics(metricsRepository repository.MetricsRepository) {
+	metricKeys := metricsRepository.ListKeysRepository()
 
 	for _, key := range metricKeys {
-		metrics, _ := redis.ListMetricsRepository(key)
+		metrics, _ := metricsRepository.ListMetricsRepository(key)
 		for _, expiredAtData := range metrics.Values {
 
 			date, _ := splitExpiredAtData(expiredAtData)
@@ -25,7 +25,7 @@ func CleanMetrics(redis repository.RedisAdapter) {
 			}
 
 			if currentDateTime.After(expiredAt) {
-				redis.DeleteMetricRepository(key, expiredAtData)
+				metricsRepository.DeleteMetricRepository(key, expiredAtData)
 			}
 		}
 	}

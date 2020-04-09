@@ -23,7 +23,8 @@ func MetricReport(c *gin.Context) {
 func executeMetricReport(metricName string) int {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{client}
-	metrics, err := redisAdapter.ListMetricsRepository(metricName)
+	metricsRepository := repository.MetricsRepository{Adapter: redisAdapter}
+	metrics, err := metricsRepository.ListMetricsRepository(metricName)
 
 	if err != nil {
 		return 0

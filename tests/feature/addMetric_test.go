@@ -40,7 +40,8 @@ func TestAddMetricFeature(t *testing.T) {
 
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{client}
-	metrics, err := redisAdapter.ListMetricsRepository("payments")
+	metricsRepository := repository.MetricsRepository{Adapter: redisAdapter}
+	metrics, err := metricsRepository.ListMetricsRepository("payments")
 
 	assert.Equal(t, metricName, metrics.Name)
 	assert.Equal(t, expiredAt, metrics.Values[0])

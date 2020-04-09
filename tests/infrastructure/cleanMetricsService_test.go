@@ -27,10 +27,11 @@ func TestCleansOldMetrics(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	client.FlushAll()
 	redisAdapter := repository.RedisAdapter{client}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	repository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetrics(metrics, repository)
 
-	infrastructure.CleanMetrics(redisAdapter)
-	result, _ := redisAdapter.ListMetricsRepository(metrics.Name)
+	infrastructure.CleanMetrics(repository)
+	result, _ := repository.ListMetricsRepository(metrics.Name)
 
 	assert.Equal(t, validMetric, result.Values[0])
 
