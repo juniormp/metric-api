@@ -13,7 +13,8 @@ import (
 func CleanMetrics(c *gin.Context) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	redisAdapter := repository.RedisAdapter{client}
-	infrastructure.CleanMetrics(redisAdapter)
+	metricsRepository := repository.MetricsRepository{Adapter: redisAdapter}
+	infrastructure.CleanMetrics(metricsRepository)
 
 	c.JSON(http.StatusOK, "")
 }
