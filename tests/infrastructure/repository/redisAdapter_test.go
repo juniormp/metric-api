@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReturnsARedisClient(t *testing.T) {
+func TestReturnsRedisClient(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
-	redisAdapter := repository.RedisAdapter{client}
+	redisAdapter := repository.RedisAdapter{Client: client}
 
 	response, err := redisAdapter.GetRedisClient()
 
@@ -21,9 +21,10 @@ func TestReturnsARedisClient(t *testing.T) {
 
 func TestReturnsAnException(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: "fake"})
-	redisAdapter := repository.RedisAdapter{client}
+	redisAdapter := repository.RedisAdapter{Client: client}
 
-	_, err := redisAdapter.GetRedisClient()
+	response, err := redisAdapter.GetRedisClient()
 
+	assert.Equal(t, client, response)
 	assert.NotEmpty(t, err, "returns an exception when test connection failed.")
 }
