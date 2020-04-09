@@ -15,7 +15,7 @@ func TestReturnsRedisClient(t *testing.T) {
 
 	response, err := redisAdapter.GetRedisClient()
 
-	assert.Empty(t, err)
+	assert.Empty(t, err, "error is empty because connection was success")
 	assert.Equal(t, client, response, "returns a redis client when test connection is sucess")
 }
 
@@ -25,6 +25,6 @@ func TestReturnsAnException(t *testing.T) {
 
 	response, err := redisAdapter.GetRedisClient()
 
-	assert.Equal(t, client, response)
+	assert.Equal(t, client, response, "returns a redis client with fake params for conncetion")
 	assert.NotEmpty(t, err, "returns an exception when test connection failed.")
 }
