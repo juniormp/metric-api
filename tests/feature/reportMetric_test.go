@@ -39,7 +39,8 @@ func TestReportMetricFeature(t *testing.T) {
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
 	client.FlushAll()
 	redisAdapter := repository.RedisAdapter{client}
-	factorytest.PersistMetrics(metrics, redisAdapter)
+	rmetricsRepository := repository.MetricsRepository{Adapter: redisAdapter}
+	factorytest.PersistMetrics(metrics, metricsRepository)
 
 	router := web.SetupRouter()
 	response := performRequestReportMetric(router, "GET", "/metric/"+metricName)
