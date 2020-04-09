@@ -12,7 +12,7 @@ import (
 func RedisHandler(c *gin.Context) {
 	redisServer := os.Getenv("REDIS_SERVER")
 	client := redis.NewClient(&redis.Options{Addr: redisServer})
-	redisAdapter := repository.RedisAdapter{client}
+	redisAdapter := repository.RedisAdapter{Client: client}
 
 	if client, err := redisAdapter.GetRedisClient(); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

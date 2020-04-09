@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/juniormp/metric-api/src/application/usecases"
-	"github.com/juniormp/metric-api/src/middleware"
+	"github.com/juniormp/metric-api/src/infrastructure/middleware"
 )
 
 func SetupRouter() *gin.Engine {

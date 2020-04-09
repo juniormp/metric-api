@@ -28,10 +28,12 @@ func AddMetric(c *gin.Context) {
 }
 
 func execute(metricRequest MetricRequest) error {
-	metric := domain.CreateMetric(metricRequest.Name, metricRequest.Value)
 	client := redis.NewClient(&redis.Options{Addr: os.Getenv("REDIS_SERVER")})
-	redisAdapter := repository.RedisAdapter{client}
-	err := redisAdapter.AddMetricRepository(metric)
+	redisAdapter := repository.RedisAdapter{Client: client}
+	repository := repository.MetricsRepository{Adapter: redisAdapter}
+
+	metric := domain.CreateMetric(metricRequest.Name, metricRequest.Value)
+	err := repository.AddMetricRepository(metric)
 
 	return err
 }

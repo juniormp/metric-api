@@ -6,8 +6,12 @@ import (
 	"github.com/juniormp/metric-api/src/domain"
 )
 
-func (redisAdapter RedisAdapter) AddMetricRepository(metric domain.Metric) error {
-	_, err := redisAdapter.Client.LPush(string(metric.Name), metric.ExpiredAt).Result()
+type MetricsRepository struct {
+	Adapter RedisAdapter
+}
+
+func (repository MetricsRepository) AddMetricRepository(metric domain.Metric) error {
+	_, err := repository.Adapter.Client.LPush(metric.Name, metric.ExpiredAt).Result()
 
 	return err
 }
@@ -50,7 +54,7 @@ func (redisAdapter RedisAdapter) ListMetricsRepository(metricName string) (domai
 		return metrics, errors.New("Error while getting metric list")
 	}
 
-	metrics = domain.Metrics{metricName, values}
+	metrics = domain.Metrics{Name: metricName, Values: values}
 
 	return metrics, err
 }
