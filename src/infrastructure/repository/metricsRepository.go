@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 
+	"github.com/go-redis/redis"
 	"github.com/juniormp/metric-api/src/domain"
 )
 
@@ -10,14 +11,20 @@ type MetricsRepository struct {
 	Adapter RedisAdapter
 }
 
+func (metricsRepository MetricsRepository) getClient() *redis.Client {
+	return metricsRepository.Adapter.Client
+}
+
 func (repository MetricsRepository) AddMetricRepository(metric domain.Metric) error {
-	_, err := repository.Adapter.Client.LPush(metric.Name, metric.ExpiredAt).Result()
+	client := repository.getClient()
+	_, err := client.LPush(metric.Name, metric.ExpiredAt).Result()
 
 	return err
 }
 
-func (redisAdapter RedisAdapter) ListKeysRepository() []string {
-	result, err := redisAdapter.Client.Keys("*").Result()
+func (repository MetricsRepository) ListKeysRepository() []string {
+	client := repository.getClient()
+	result, err := client.Keys("*").Result()
 
 	if err != nil {
 		errors.New("Error while listing keys")
@@ -26,8 +33,9 @@ func (redisAdapter RedisAdapter) ListKeysRepository() []string {
 	return result
 }
 
-func (redisAdapter RedisAdapter) DeleteMetricRepository(metricName string, expiredAt string) (int64, error) {
-	result, err := redisAdapter.Client.LRem(metricName, 1, expiredAt).Result()
+func (repository MetricsRepository) DeleteMetricRepository(metricName string, expiredAt string) (int64, error) {
+	client := repository.getClient()
+	result, err := client.LRem(metricName, 1, expiredAt).Result()
 
 	if err != nil {
 		return result, errors.New("Error while deleting metric")
@@ -36,9 +44,10 @@ func (redisAdapter RedisAdapter) DeleteMetricRepository(metricName string, expir
 	return result, err
 }
 
-func (redisAdapter RedisAdapter) ListMetricsRepository(metricName string) (domain.Metrics, error) {
+func (repository MetricsRepository) ListMetricsRepository(metricName string) (domain.Metrics, error) {
 	var metrics domain.Metrics
-	qtdMetrics, err := redisAdapter.Client.LLen(metricName).Result()
+	client := repository.getClient()
+	qtdMetrics, err := client.LLen(metricName).Result()
 
 	if err != nil {
 		return metrics, errors.New("Error while getting metric list")
@@ -48,7 +57,7 @@ func (redisAdapter RedisAdapter) ListMetricsRepository(metricName string) (domai
 		return metrics, errors.New("Metric do not hava values")
 	}
 
-	values, err := redisAdapter.Client.LRange(metricName, 0, qtdMetrics).Result()
+	values, err := client.LRange(metricName, 0, qtdMetrics).Result()
 
 	if err != nil {
 		return metrics, errors.New("Error while getting metric list")
